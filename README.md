@@ -1,5 +1,7 @@
 # cod-stats
 
+[![Build Status](https://img.shields.io/travis/vicanso/cod-stats.svg?label=linux+build)](https://travis-ci.org/vicanso/cod-stats)
+
 Route handle stats middleware for cod, it can get some information of route handle, such as status, consuming, size and etc.
 
 ```go
