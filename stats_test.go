@@ -2,17 +2,51 @@ package stats
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/vicanso/hes"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/vicanso/cod"
 )
 
+func TestNoStatsPanic(t *testing.T) {
+	assert := assert.New(t)
+	done := false
+	defer func() {
+		r := recover()
+		assert.Equal(r.(error), errNoStatsFunction)
+		done = true
+	}()
+	New(Config{})
+	assert.True(done)
+}
+
+func TestSkip(t *testing.T) {
+	assert := assert.New(t)
+	fn := New(Config{
+		OnStats: func(info *Info, _ *cod.Context) {
+
+		},
+	})
+	c := cod.NewContext(nil, nil)
+	done := false
+	c.Next = func() error {
+		done = true
+		return nil
+	}
+	c.Committed = true
+	fn(c)
+	assert.True(done)
+}
+
 func TestStats(t *testing.T) {
 	t.Run("normal", func(t *testing.T) {
+		assert := assert.New(t)
 		req := httptest.NewRequest("GET", "http://127.0.0.1/users/me", nil)
 		resp := httptest.NewRecorder()
 		c := cod.NewContext(resp, req)
@@ -30,33 +64,64 @@ func TestStats(t *testing.T) {
 			return nil
 		}
 		err := fn(c)
-		if err != nil {
-			t.Fatalf("stats middleware fail, %v", err)
-		}
-		if !done {
-			t.Fatalf("on stats is not called")
-		}
+		assert.Nil(err)
+		assert.True(done)
 	})
 
-	t.Run("return error", func(t *testing.T) {
+	t.Run("return hes error", func(t *testing.T) {
+		assert := assert.New(t)
 		req := httptest.NewRequest("GET", "http://127.0.0.1/users/me", nil)
 		resp := httptest.NewRecorder()
 		c := cod.NewContext(resp, req)
 		done := false
 		fn := New(Config{
 			OnStats: func(info *Info, _ *cod.Context) {
-				if info.Status != http.StatusBadRequest {
-					t.Fatalf("status code should be 400")
-				}
+				assert.Equal(info.Status, http.StatusBadRequest)
 				done = true
 			},
 		})
 		c.Next = func() error {
 			return hes.New("abc")
 		}
-		fn(c)
-		if !done {
-			t.Fatalf("on stats is not called")
-		}
+		err := fn(c)
+		assert.NotNil(err)
+		assert.True(done, "on stats shouldn be called when return error")
 	})
+
+	t.Run("return normal error", func(t *testing.T) {
+		assert := assert.New(t)
+		req := httptest.NewRequest("GET", "http://127.0.0.1/users/me", nil)
+		resp := httptest.NewRecorder()
+		c := cod.NewContext(resp, req)
+		done := false
+		fn := New(Config{
+			OnStats: func(info *Info, _ *cod.Context) {
+				assert.Equal(info.Status, http.StatusInternalServerError)
+				done = true
+			},
+		})
+		c.Next = func() error {
+			return errors.New("abc")
+		}
+		err := fn(c)
+		assert.NotNil(err)
+		assert.True(done, "on stats shouldn be called when return error")
+	})
+}
+
+// https://stackoverflow.com/questions/50120427/fail-unit-tests-if-coverage-is-below-certain-percentage
+func TestMain(m *testing.M) {
+	// call flag.Parse() here if TestMain uses flags
+	rc := m.Run()
+
+	// rc 0 means we've passed,
+	// and CoverMode will be non empty if run with -cover
+	if rc == 0 && testing.CoverMode() != "" {
+		c := testing.Coverage()
+		if c < 0.9 {
+			fmt.Println("Tests passed but coverage failed at", c)
+			rc = -1
+		}
+	}
+	// os.Exit(rc)
 }

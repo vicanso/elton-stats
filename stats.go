@@ -15,6 +15,7 @@
 package stats
 
 import (
+	"errors"
 	"net/http"
 	"net/url"
 	"sync/atomic"
@@ -22,6 +23,10 @@ import (
 
 	"github.com/vicanso/cod"
 	"github.com/vicanso/hes"
+)
+
+var (
+	errNoStatsFunction = errors.New("require on stats function")
 )
 
 type (
@@ -50,7 +55,7 @@ type (
 // New create a new stats middleware
 func New(config Config) cod.Handler {
 	if config.OnStats == nil {
-		panic("require on stats function")
+		panic(errNoStatsFunction)
 	}
 	var connectingCount uint32
 	skipper := config.Skipper
