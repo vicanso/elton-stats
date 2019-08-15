@@ -11,7 +11,7 @@ import (
 	"github.com/vicanso/hes"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 )
 
 func TestNoStatsPanic(t *testing.T) {
@@ -29,11 +29,11 @@ func TestNoStatsPanic(t *testing.T) {
 func TestSkip(t *testing.T) {
 	assert := assert.New(t)
 	fn := New(Config{
-		OnStats: func(info *Info, _ *cod.Context) {
+		OnStats: func(info *Info, _ *elton.Context) {
 
 		},
 	})
-	c := cod.NewContext(nil, nil)
+	c := elton.NewContext(nil, nil)
 	done := false
 	c.Next = func() error {
 		done = true
@@ -49,11 +49,11 @@ func TestStats(t *testing.T) {
 		assert := assert.New(t)
 		req := httptest.NewRequest("GET", "http://127.0.0.1/users/me", nil)
 		resp := httptest.NewRecorder()
-		c := cod.NewContext(resp, req)
+		c := elton.NewContext(resp, req)
 		c.BodyBuffer = bytes.NewBufferString("abcd")
 		done := false
 		fn := New(Config{
-			OnStats: func(info *Info, _ *cod.Context) {
+			OnStats: func(info *Info, _ *elton.Context) {
 				if info.Status != http.StatusOK {
 					t.Fatalf("status code should be 200")
 				}
@@ -72,10 +72,10 @@ func TestStats(t *testing.T) {
 		assert := assert.New(t)
 		req := httptest.NewRequest("GET", "http://127.0.0.1/users/me", nil)
 		resp := httptest.NewRecorder()
-		c := cod.NewContext(resp, req)
+		c := elton.NewContext(resp, req)
 		done := false
 		fn := New(Config{
-			OnStats: func(info *Info, _ *cod.Context) {
+			OnStats: func(info *Info, _ *elton.Context) {
 				assert.Equal(info.Status, http.StatusBadRequest)
 				done = true
 			},
@@ -92,10 +92,10 @@ func TestStats(t *testing.T) {
 		assert := assert.New(t)
 		req := httptest.NewRequest("GET", "http://127.0.0.1/users/me", nil)
 		resp := httptest.NewRecorder()
-		c := cod.NewContext(resp, req)
+		c := elton.NewContext(resp, req)
 		done := false
 		fn := New(Config{
-			OnStats: func(info *Info, _ *cod.Context) {
+			OnStats: func(info *Info, _ *elton.Context) {
 				assert.Equal(info.Status, http.StatusInternalServerError)
 				done = true
 			},

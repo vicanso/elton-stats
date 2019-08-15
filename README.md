@@ -1,8 +1,8 @@
-# cod-stats
+# elton-stats
 
-[![Build Status](https://img.shields.io/travis/vicanso/cod-stats.svg?label=linux+build)](https://travis-ci.org/vicanso/cod-stats)
+[![Build Status](https://img.shields.io/travis/vicanso/elton-stats.svg?label=linux+build)](https://travis-ci.org/vicanso/elton-stats)
 
-Route handle stats middleware for cod, it can get some information of route handle, such as status, consuming, size and etc.
+Route handle stats middleware for elton, it can get some information of route handle, such as status, consuming, size and etc.
 
 ```go
 package main
@@ -11,19 +11,19 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 
-	proxy "github.com/vicanso/cod-proxy"
-	stats "github.com/vicanso/cod-stats"
+	proxy "github.com/vicanso/elton-proxy"
+	stats "github.com/vicanso/elton-stats"
 )
 
 func main() {
-	d := cod.New()
+	d := elton.New()
 
 	target, _ := url.Parse("https://www.baidu.com")
 
 	d.Use(stats.New(stats.Config{
-		OnStats: func(info *stats.Info, _ *cod.Context) {
+		OnStats: func(info *stats.Info, _ *elton.Context) {
 			fmt.Println(info)
 		},
 	}))

@@ -21,7 +21,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/vicanso/cod"
+	"github.com/vicanso/elton"
 	"github.com/vicanso/hes"
 )
 
@@ -31,11 +31,11 @@ var (
 
 type (
 	// OnStats on stats function
-	OnStats func(*Info, *cod.Context)
+	OnStats func(*Info, *elton.Context)
 	// Config stats config
 	Config struct {
 		OnStats OnStats
-		Skipper cod.Skipper
+		Skipper elton.Skipper
 	}
 	// Info stats's info
 	Info struct {
@@ -53,16 +53,16 @@ type (
 )
 
 // New create a new stats middleware
-func New(config Config) cod.Handler {
+func New(config Config) elton.Handler {
 	if config.OnStats == nil {
 		panic(errNoStatsFunction)
 	}
 	var connectingCount uint32
 	skipper := config.Skipper
 	if skipper == nil {
-		skipper = cod.DefaultSkipper
+		skipper = elton.DefaultSkipper
 	}
-	return func(c *cod.Context) (err error) {
+	return func(c *elton.Context) (err error) {
 		if skipper(c) {
 			return c.Next()
 		}
