@@ -1,14 +1,8 @@
-# elton-stats
-
-[![Build Status](https://img.shields.io/travis/vicanso/elton-stats.svg?label=linux+build)](https://travis-ci.org/vicanso/elton-stats)
-
-Route handle stats middleware for elton, it can get some information of route handle, such as status, consuming, size and etc.
-
-```go
 package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 
 	"github.com/vicanso/elton"
@@ -35,4 +29,3 @@ func main() {
 		panic(err)
 	}
 }
-```

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/vicanso/hes"
@@ -40,7 +41,8 @@ func TestSkip(t *testing.T) {
 		return nil
 	}
 	c.Committed = true
-	fn(c)
+	err := fn(c)
+	assert.Nil(err)
 	assert.True(done)
 }
 
@@ -123,5 +125,5 @@ func TestMain(m *testing.M) {
 			rc = -1
 		}
 	}
-	// os.Exit(rc)
+	os.Exit(rc)
 }

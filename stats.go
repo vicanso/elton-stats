@@ -39,16 +39,16 @@ type (
 	}
 	// Info stats's info
 	Info struct {
-		CID        string
-		IP         string
-		Method     string
-		Route      string
-		URI        string
-		Status     int
-		Consuming  time.Duration
-		Type       int
-		Size       int
-		Connecting uint32
+		CID        string        `json:"cid,omitempty"`
+		IP         string        `json:"ip,omitempty"`
+		Method     string        `json:"method,omitempty"`
+		Route      string        `json:"route,omitempty"`
+		URI        string        `json:"uri,omitempty"`
+		Status     int           `json:"status,omitempty"`
+		Consuming  time.Duration `json:"consuming,omitempty"`
+		Type       int           `json:"type,omitempty"`
+		Size       int           `json:"size,omitempty"`
+		Connecting uint32        `json:"connecting,omitempty"`
 	}
 )
 
