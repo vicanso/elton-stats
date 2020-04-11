@@ -1,5 +1,7 @@
 # elton-stats
 
+The middleware has been archived, please use the middleware of [elton](https://github.com/vicanso/elton).
+
 [![Build Status](https://img.shields.io/travis/vicanso/elton-stats.svg?label=linux+build)](https://travis-ci.org/vicanso/elton-stats)
 
 Route handle stats middleware for elton, it can get some information of route handle, such as status, consuming, size and etc.
